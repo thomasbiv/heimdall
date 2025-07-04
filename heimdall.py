@@ -1,5 +1,6 @@
 from cryptography.fernet import Fernet
 import os
+import csv
 
 def keygen():
     #GENERATE NEW KEY
@@ -68,3 +69,16 @@ def decrypt(file_path):
         print("Permission denied. Cannot delete the file.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def create_password_file():
+    header = ['website', 'email','username','password']
+    with open('passwords.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(header) #write one row / header, writerows for multiple
+
+def add_password_data(website, email, username, password):
+    print("coom")
+    new_row = [website, email, username, password]
+    with open('passwords.csv', 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(new_row) #write one row / header, writerows for multiple
