@@ -4,6 +4,7 @@ import heimdall
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import filedialog
+from tkinter import ttk
 
 def on_select(value):
     if value == "1. Encrypt a file":
@@ -12,8 +13,10 @@ def on_select(value):
         option_two(value)
     elif value == "3. Decrypt a file":
         option_three(value)
-    elif value == "4. Edit a password file":
+    elif value == "4. Add to a password file":
         option_four(value)
+    elif value == "5. View password file contents":
+        option_five(value)
     else:
         print("you should never see this")
 
@@ -26,7 +29,7 @@ def option_one(value):
     message.pack(pady=(20, 10))
     file_path = filedialog.askopenfilename(
         title="Select a file",
-        filetypes=(("Text files", "*.txt"), ("CSV files", ".csv"), ("All files", "*.*"))
+        filetypes=[("CSV files", ".csv")]
     )
     if file_path:
         message = tk.Label(window, text=f"File Selected, you chose:\n{file_path}", font=("Arial", 12))
@@ -42,15 +45,25 @@ def option_one(value):
 def option_two(value):
     for widget in window.winfo_children():
         widget.destroy() 
+
+    selected_folder = filedialog.askdirectory(title="Select the location for where your file will be created")
+    if selected_folder:
+        message = tk.Label(window, text=f"Folder Selected, you chose:\n{selected_folder}", font=("Arial", 12))
+        message.pack(pady=(20, 10))
+
+        message = tk.Label(window, text="Click here to create a new password file.", font=("Arial", 14))
+        message.pack(pady=(20, 10))
+
+        create_button = tk.Button(window, text="Create", command=lambda:heimdall.create_password_file(selected_folder))
+        create_button.pack(pady=10)   
+
+        back_button = tk.Button(window, text="Go Back", command=reset_ui)
+        back_button.pack(pady=10)
+    else:
+        message = tk.Label(window, text=f"No folder was selected", font=("Arial", 12))
+        reset_ui()
     
-    message = tk.Label(window, text="Click here to create a new password file.", font=("Arial", 14))
-    message.pack(pady=(20, 10))
-
-    create_button = tk.Button(window, text="Create", command=lambda:heimdall.create_password_file())
-    create_button.pack(pady=10)   
-
-    back_button = tk.Button(window, text="Go Back", command=reset_ui)
-    back_button.pack(pady=10)
+    
 
 
 def option_three(value):
@@ -61,7 +74,7 @@ def option_three(value):
     message.pack(pady=(20, 10))
     file_path = filedialog.askopenfilename(
         title="Select a file",
-        filetypes=(("Text files", "*.txt"), ("CSV files", ".csv"), ("All files", "*.*"))
+        filetypes=[("CSV files", ".csv")]
     )
     if file_path:
         message = tk.Label(window, text=f"File Selected, you chose:\n{file_path}", font=("Arial", 12))
@@ -83,7 +96,7 @@ def option_four(value):
 
     file_path = filedialog.askopenfilename(
         title="Select a file",
-        filetypes=(("Text files", "*.txt"), ("CSV files", ".csv"), ("All files", "*.*"))
+        filetypes=[("CSV files", ".csv")]
     )
 
     if file_path:
@@ -115,13 +128,63 @@ def option_four(value):
             email = email_entry.get()
             username = username_entry.get()
             password = password_entry.get()
-            heimdall.add_password_data(website, email, username, password)  # Assuming heimdall is defined
+            heimdall.add_password_data(file_path, website, email, username, password)  # Assuming heimdall is defined
 
         submit_button = tk.Button(window, text="Done", command=on_done)
         submit_button.pack(pady=10)
 
     back_button = tk.Button(window, text="Go Back", command=reset_ui)
     back_button.pack(pady=10)
+
+def option_five(value):
+    for widget in window.winfo_children():
+        widget.destroy()
+
+    message = tk.Label(window, text="Please navigate to file you wish to edit", font=("Arial", 14))
+    message.pack(pady=(20, 10))
+
+    file_path = filedialog.askopenfilename(
+        title="Select a file",
+        filetypes=[("CSV files", ".csv")]
+    )
+
+    if file_path:
+        for widget in window.winfo_children():
+            widget.destroy()
+
+        message = tk.Label(window, text=f"File Selected, you chose:\n{file_path}", font=("Arial", 12))
+        message.pack(pady=(20, 10))
+        print("Selected file:", file_path)
+        rows = heimdall.view_file_contents(file_path)
+
+        tree = ttk.Treeview(window)
+        tree.pack(fill=tk.BOTH, expand=True)
+
+        tree["columns"] = list(range(len(rows[0])))
+        tree["show"] = "headings"
+
+        # Compute max length per column (including header)# Compute max length per column (including header)
+        col_widths = [len(str(header)) for header in rows[0]]
+        for row in rows[1:]:
+            for i, cell in enumerate(row):
+                col_widths[i] = max(col_widths[i], len(str(cell)))
+        
+        # Compute max length per column (including header)
+        for i, header in enumerate(rows[0]):
+            est_pixel_width = max(100, col_widths[i] * 7)  # Estimate 7 pixels per character
+            tree.heading(i, text=header)
+            tree.column(i, width=est_pixel_width)
+        
+        # Add data rows
+        for row in rows[1:]:
+            tree.insert("", "end", values=row)
+        
+        num_data_rows = len(rows) - 1
+        tree.config(height=min(num_data_rows, 20))
+    
+    back_button = tk.Button(window, text="Go Back", command=reset_ui)
+    back_button.pack(pady=10)
+        
 
 
 def reset_ui():
@@ -131,7 +194,7 @@ def reset_ui():
     title_label = tk.Label(window, text="What would you like to do?", font=("Arial", 14))
     title_label.pack(pady=(20, 10))
     #Dropdown menu
-    options = ["1. Encrypt a file", "2. Create a new password file", "3. Decrypt a file", "4. Edit a password file"]
+    options = ["1. Encrypt a file", "2. Create a new password file", "3. Decrypt a file", "4. Add to a password file", "5. View password file contents"]
     selected_option = StringVar()
     selected_option.set(options[0])
 
@@ -153,7 +216,7 @@ window.config(background="#237ACB")
 title_label = tk.Label(window, text="What would you like to do?", font=("Arial", 14))
 title_label.pack(pady=(20, 10))
 #Dropdown menu
-options = ["1. Encrypt a file", "2. Create a new password file", "3. Decrypt a file", "4. Edit a password file"]
+options = ["1. Encrypt a file", "2. Create a new password file", "3. Decrypt a file", "4. Add to a password file", "5. View password file contents"]
 selected_option = StringVar()
 selected_option.set(options[0])
 
