@@ -94,4 +94,23 @@ def view_file_contents(file_path):
         else:
             return rows
         
+def csv_delete(selected_values, file_path):
+    # Reload CSV
+    with open(file_path, newline='', encoding="utf-8") as f:
+        reader = list(csv.reader(f))
+        header = reader[0]
+        data = reader[1:]
+
+    # Remove matching row
+    if selected_values in data:
+        data.remove(selected_values)
+
+    # Save back to file
+        with open(file_path, "w", newline='', encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            writer.writerows(data)
+
+        return 1
+        
 

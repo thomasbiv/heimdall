@@ -5,6 +5,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
+#import csv
 
 def on_select(value):
     if value == "1. Encrypt a file":
@@ -63,9 +64,6 @@ def option_two(value):
         message = tk.Label(window, text=f"No folder was selected", font=("Arial", 12))
         reset_ui()
     
-    
-
-
 def option_three(value):
     for widget in window.winfo_children():
         widget.destroy()
@@ -148,13 +146,17 @@ def option_five(value):
         filetypes=[("CSV files", ".csv")]
     )
 
-    if file_path:
+    if not file_path:
+        return
+
+    def load_data():
         for widget in window.winfo_children():
             widget.destroy()
 
         message = tk.Label(window, text=f"File Selected, you chose:\n{file_path}", font=("Arial", 12))
         message.pack(pady=(20, 10))
         print("Selected file:", file_path)
+
         rows = heimdall.view_file_contents(file_path)
 
         tree = ttk.Treeview(window)
@@ -163,28 +165,40 @@ def option_five(value):
         tree["columns"] = list(range(len(rows[0])))
         tree["show"] = "headings"
 
-        # Compute max length per column (including header)# Compute max length per column (including header)
         col_widths = [len(str(header)) for header in rows[0]]
         for row in rows[1:]:
             for i, cell in enumerate(row):
                 col_widths[i] = max(col_widths[i], len(str(cell)))
-        
-        # Compute max length per column (including header)
+
         for i, header in enumerate(rows[0]):
-            est_pixel_width = max(100, col_widths[i] * 7)  # Estimate 7 pixels per character
+            est_pixel_width = max(100, col_widths[i] * 7)
             tree.heading(i, text=header)
             tree.column(i, width=est_pixel_width)
-        
-        # Add data rows
+
         for row in rows[1:]:
             tree.insert("", "end", values=row)
-        
-        num_data_rows = len(rows) - 1
-        tree.config(height=min(num_data_rows, 20))
-    
-    back_button = tk.Button(window, text="Go Back", command=reset_ui)
-    back_button.pack(pady=10)
-        
+
+        tree.config(height=min(len(rows) - 1, 20))
+
+        def delete_selected_row():
+            selected = tree.selection()
+            if not selected:
+                return
+
+            selected_values = tree.item(selected[0])["values"]
+            
+            result = heimdall.csv_delete(selected_values, file_path)
+
+            if result == 1:
+                load_data()  # Refresh Treeview
+
+        delete_button = tk.Button(window, text="Delete Selected Row", command=delete_selected_row, fg="white", bg="red")
+        delete_button.pack(pady=10)
+
+        back_button = tk.Button(window, text="Go Back", command=reset_ui)
+        back_button.pack(pady=10)
+
+    load_data()
 
 
 def reset_ui():
