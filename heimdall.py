@@ -1,5 +1,6 @@
 from cryptography.fernet import Fernet
 import os
+import csv
 
 def keygen():
     #GENERATE NEW KEY
@@ -23,7 +24,7 @@ def encrypt(mykey, key, file_path):
 
     encrypted = f.encrypt(original)
 
-    with open('enc_grades.csv', 'wb') as encrypted_file:
+    with open('enc_passwords.csv', 'wb') as encrypted_file:
         encrypted_file.write(encrypted)
 
     #DELETE DECRYPTED FILE
@@ -55,7 +56,7 @@ def decrypt(file_path):
 
     decrypted = f.decrypt(encrypted)
 
-    with open('dec_grades.csv', 'wb') as decrypted_file:
+    with open('dec_passwords.csv', 'wb') as decrypted_file:
         decrypted_file.write(decrypted)
     
     #DELETE ENCRYPTED FILE
@@ -68,3 +69,48 @@ def decrypt(file_path):
         print("Permission denied. Cannot delete the file.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def create_password_file(selected_folder):
+    full_path = os.path.join(selected_folder, "passwords.csv")
+    header = ['website', 'email','username','password']
+    with open(full_path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(header) #write one row / header, writerows for multiple
+
+def add_password_data(file_path, website, email, username, password):
+    new_row = [website, email, username, password]
+
+    with open(file_path, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(new_row) #write one row / header, writerows for multiple
+
+def view_file_contents(file_path):
+    with open(file_path, newline='') as f:
+        reader = csv.reader(f)
+        rows = list(reader)
+
+        if not rows:
+            return
+        else:
+            return rows
+        
+def csv_delete(selected_values, file_path):
+    # Reload CSV
+    with open(file_path, newline='', encoding="utf-8") as f:
+        reader = list(csv.reader(f))
+        header = reader[0]
+        data = reader[1:]
+
+    # Remove matching row
+    if selected_values in data:
+        data.remove(selected_values)
+
+    # Save back to file
+        with open(file_path, "w", newline='', encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            writer.writerows(data)
+
+        return 1
+        
+
