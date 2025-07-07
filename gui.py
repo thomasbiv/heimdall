@@ -147,38 +147,71 @@ def option_five(value):
     )
 
     if not file_path:
-        return
+        cancel_message = tk.Label(window, text="No file selected.", font=("Arial", 12), fg="red")
+        cancel_message.pack(pady=(10, 10))
 
-    def load_data():
+        back_button = tk.Button(window, text="Go Back", command=reset_ui)
+        back_button.pack(pady=10)
+        return
+    
+    filter_var = tk.StringVar()
+
+    def load_data(website_filter=None):
         for widget in window.winfo_children():
             widget.destroy()
 
         message = tk.Label(window, text=f"File Selected, you chose:\n{file_path}", font=("Arial", 12))
-        message.pack(pady=(20, 10))
+        message.pack(pady=(10, 5))
         print("Selected file:", file_path)
 
+        # Filter entry
+        filter_frame = tk.Frame(window)
+        filter_frame.pack(pady=5)
+
+        tk.Label(filter_frame, text="Filter by website:").pack(side=tk.LEFT, padx=(0, 5))
+        filter_entry = tk.Entry(filter_frame, textvariable=filter_var)
+        filter_entry.pack(side=tk.LEFT)
+
+        def apply_filter():
+            load_data(website_filter=filter_var.get())
+
+        #####
+
+        tk.Button(filter_frame, text="Apply Filter", command=apply_filter).pack(side=tk.LEFT, padx=5)
+        tk.Button(filter_frame, text="Clear Filter", command=lambda: load_data()).pack(side=tk.LEFT)
+
         rows = heimdall.view_file_contents(file_path)
+
+        if not rows:
+            tk.Label(window, text="No data found in the file.", fg="red").pack()
+            return
+        
+        header = rows[0]
+        data = rows[1:]
+
+        if website_filter:
+            data = [row for row in data if website_filter.lower() in str(row[0]).lower()]  # Assumes website is at index 0
 
         tree = ttk.Treeview(window)
         tree.pack(fill=tk.BOTH, expand=True)
 
-        tree["columns"] = list(range(len(rows[0])))
+        tree["columns"] = list(range(len(header)))
         tree["show"] = "headings"
 
-        col_widths = [len(str(header)) for header in rows[0]]
-        for row in rows[1:]:
+        col_widths = [len(str(h)) for h in header]
+        for row in data:
             for i, cell in enumerate(row):
                 col_widths[i] = max(col_widths[i], len(str(cell)))
 
-        for i, header in enumerate(rows[0]):
+        for i, h in enumerate(header):
             est_pixel_width = max(100, col_widths[i] * 7)
-            tree.heading(i, text=header)
+            tree.heading(i, text=h)
             tree.column(i, width=est_pixel_width)
 
-        for row in rows[1:]:
+        for row in data:
             tree.insert("", "end", values=row)
 
-        tree.config(height=min(len(rows) - 1, 20))
+        tree.config(height=min(len(data), 20))
 
         def delete_selected_row():
             selected = tree.selection()
@@ -190,7 +223,7 @@ def option_five(value):
             result = heimdall.csv_delete(selected_values, file_path)
 
             if result == 1:
-                load_data()  # Refresh Treeview
+                load_data(website_filter=filter_var.get())  # Refresh Treeview
 
         delete_button = tk.Button(window, text="Delete Selected Row", command=delete_selected_row, fg="white", bg="red")
         delete_button.pack(pady=10)

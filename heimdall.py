@@ -24,7 +24,8 @@ def encrypt(mykey, key, file_path):
 
     encrypted = f.encrypt(original)
 
-    with open('enc_passwords.csv', 'wb') as encrypted_file:
+    full_path = os.path.join(os.path.dirname(file_path), "enc_passwords.csv")
+    with open(full_path, 'wb') as encrypted_file:
         encrypted_file.write(encrypted)
 
     #DELETE DECRYPTED FILE
@@ -56,7 +57,9 @@ def decrypt(file_path):
 
     decrypted = f.decrypt(encrypted)
 
-    with open('dec_passwords.csv', 'wb') as decrypted_file:
+
+    full_path = os.path.join(os.path.dirname(file_path), "dec_passwords.csv")
+    with open(full_path, 'wb') as decrypted_file:
         decrypted_file.write(decrypted)
     
     #DELETE ENCRYPTED FILE
