@@ -5,6 +5,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
+
 #import csv
 
 def on_select(value):
@@ -238,6 +239,10 @@ def reset_ui():
     for widget in window.winfo_children():
         widget.destroy()
 
+    image_lable = tk.Label(window, image=resized_image)
+    image_lable.config()
+    image_lable.pack(pady=20)
+
     title_label = tk.Label(window, text="What would you like to do?", font=("Arial", 14))
     title_label.pack(pady=(20, 10))
     #Dropdown menu
@@ -255,9 +260,15 @@ window = tk.Tk() #intantiate an instance of a window for us
 window.geometry("500x500")
 window.title("Heimdall Password Encryption Manager")
 
-#icon = PhotoImage(file='path of image in proj folder.png') #come back to this once i want to set a logo
-#window.iconphoto(True, icon)
-window.config(background="#237ACB")
+icon = tk.PhotoImage(file='heimdall logo.png') 
+window.iconphoto(True, icon)
+window.config(background="#001c2c")
+
+resized_image = icon.subsample(2, 2)
+
+image_lable = tk.Label(window, image=resized_image)
+image_lable.config()
+image_lable.pack(pady=20)
 
 #Title label
 title_label = tk.Label(window, text="What would you like to do?", font=("Arial", 14))
