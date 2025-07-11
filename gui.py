@@ -5,6 +5,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
+from PIL import Image, ImageTk
 
 #import csv
 
@@ -264,7 +265,9 @@ icon = tk.PhotoImage(file='heimdall logo.png')
 window.iconphoto(True, icon)
 window.config(background="#001c2c")
 
-resized_image = icon.subsample(2, 2)
+logo = Image.open("heimdalllogowithwords.png")
+resized_image = logo.resize((400, 200))
+resized_image = ImageTk.PhotoImage(resized_image) 
 
 image_lable = tk.Label(window, image=resized_image)
 image_lable.config()
