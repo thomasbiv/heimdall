@@ -1,7 +1,7 @@
 # heimdall
 Password encryption and management tool.
 
-![image]([https://raw.githubusercontent.com/thomasbiv/heimdall/refs/heads/main/heimdalllogowithwords.png](https://raw.githubusercontent.com/thomasbiv/heimdall/refs/heads/main/images/heimdalllogowithwords.png))
+![image](https://raw.githubusercontent.com/thomasbiv/heimdall/refs/heads/main/images/heimdalllogowithwords.png)
 
 # Description
 Heimdall is a password management program that uses symmetric encryption to keep sensitive password files secure. With Heimdall, you can:
