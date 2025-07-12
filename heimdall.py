@@ -115,5 +115,25 @@ def csv_delete(selected_values, file_path):
             writer.writerows(data)
 
         return 1
+    
+def check_file_exists(selected_folder):
+    dec_path = os.path.join(selected_folder, "dec_passwords.csv")
+    new_path = os.path.join(selected_folder, "passwords.csv")
+    enc_path = os.path.join(selected_folder, "enc_passwords.csv")
+    if os.path.exists(dec_path):
+        result = "dec"
+    elif os.path.exists(new_path):
+        result = "new"
+    elif os.path.exists(enc_path):
+        result = "enc"
+    else:
+        result = "NA" 
+    return result
+
+def get_photos():
+    script_dir = os.path.dirname(__file__)  # Directory of the current script
+    icon_path = os.path.join(script_dir, "images", "heimdall logo.png")
+    words_path = os.path.join(script_dir, "images", "heimdalllogowithwords.png")
+    return icon_path, words_path
         
 

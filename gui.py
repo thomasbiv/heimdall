@@ -57,6 +57,21 @@ def option_two(value):
         message = tk.Label(window, text="Click here to create a new password file.", font=("Arial", 14))
         message.pack(pady=(20, 10))
 
+        #check if file exists here
+        result = heimdall.check_file_exists(selected_folder)
+        if result == "dec":
+            proceed = messagebox.askyesno("Warning!", "It looks like you already have an existing password file in this location. Creating a new password file will delete all contents from the current one saved on your computer. Would you still like to continue?")
+            if not proceed:
+                return reset_ui()
+        elif result == "new":
+            proceed = messagebox.askyesno("Warning!", "It looks like you already have an existing password file in this location. Creating a new password file will delete all contents from the current one saved on your computer. Would you still like to continue?")
+            if not proceed:
+                return reset_ui()
+        elif result == "enc":
+            proceed = messagebox.askyesno("Warning!", "It looks like you already have an existing password file in this location. Creating a new password file will delete all contents from the current one saved on your computer. Would you still like to continue?")
+            if not proceed:
+                return reset_ui()
+
         create_button = tk.Button(window, text="Create", command=lambda:heimdall.create_password_file(selected_folder))
         create_button.pack(pady=10)   
 
@@ -261,11 +276,12 @@ window = tk.Tk() #intantiate an instance of a window for us
 window.geometry("500x500")
 window.title("Heimdall Password Encryption Manager")
 
-icon = tk.PhotoImage(file='heimdall logo.png') 
+icon_path, words_path = heimdall.get_photos()
+icon = tk.PhotoImage(file=icon_path) 
 window.iconphoto(True, icon)
 window.config(background="#001c2c")
 
-logo = Image.open("heimdalllogowithwords.png")
+logo = Image.open(words_path)
 resized_image = logo.resize((400, 200))
 resized_image = ImageTk.PhotoImage(resized_image) 
 
