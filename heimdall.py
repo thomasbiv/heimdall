@@ -58,7 +58,7 @@ def decrypt(file_path):
     decrypted = f.decrypt(encrypted)
 
 
-    full_path = os.path.join(os.path.dirname(file_path), "dec_passwords.csv")
+    full_path = os.path.join(os.path.dirname(file_path), "passwords.csv")
     with open(full_path, 'wb') as decrypted_file:
         decrypted_file.write(decrypted)
     
