@@ -39,7 +39,8 @@ def option_one(value):
         message.pack(pady=(20, 10))
         print("Selected file:", file_path)
 
-        encrypt_button = tk.Button(window, text="Encrypt", command=lambda:heimdall.encrypt(mykey, key, file_path))
+        #encrypt_button = tk.Button(window, text="Encrypt", command=lambda:heimdall.encrypt(mykey, key, file_path))
+        encrypt_button = tk.Button(window, text="Encrypt", command=run_backend_encrypt(value, mykey, key, file_path))
         encrypt_button.pack(pady=10)
 
     back_button = tk.Button(window, text="Go Back", command=reset_ui)
@@ -72,7 +73,8 @@ def option_two(value):
             if not proceed:
                 return reset_ui()
 
-        create_button = tk.Button(window, text="Create", command=lambda:heimdall.create_password_file(selected_folder))
+        #create_button = tk.Button(window, text="Create", command=lambda:heimdall.create_password_file(selected_folder))
+        create_button = tk.Button(window, text="Create", command=run_backend_create(value, selected_folder))
         create_button.pack(pady=10)   
 
         back_button = tk.Button(window, text="Go Back", command=reset_ui)
@@ -96,7 +98,8 @@ def option_three(value):
         message.pack(pady=(20, 10))
         print("Selected file:", file_path)
 
-        decrypt_button = tk.Button(window, text="Decrypt", command=lambda:heimdall.decrypt(file_path))
+        #decrypt_button = tk.Button(window, text="Decrypt", command=lambda:heimdall.decrypt(file_path))
+        decrypt_button = tk.Button(window, text="Decrypt", command=run_backend_decrypt(value, file_path))
         decrypt_button.pack(pady=10)
     
     back_button = tk.Button(window, text="Go Back", command=reset_ui)
@@ -143,7 +146,8 @@ def option_four(value):
             email = email_entry.get()
             username = username_entry.get()
             password = password_entry.get()
-            heimdall.add_password_data(file_path, website, email, username, password)  # Assuming heimdall is defined
+            #heimdall.add_password_data(file_path, website, email, username, password)  # Assuming heimdall is defined
+            run_backend_add(value, file_path, website, email, username, password)  # Assuming heimdall is defined
 
         submit_button = tk.Button(window, text="Done", command=on_done)
         submit_button.pack(pady=10)
@@ -250,6 +254,47 @@ def option_five(value):
 
     load_data()
 
+def run_backend_encrypt(value, mykey, key, file_path):
+    result = 0
+    if value == "1. Encrypt a file":
+        result = heimdall.encrypt(mykey, key, file_path)
+
+    # Now `result` is whatever the encrypt() function returned
+    if result == 1:
+        messagebox.showinfo("Success", "File encrypted successfully!")
+    else:
+        messagebox.showerror("Error", "Process failed.")
+
+
+def run_backend_create(value, selected_folder):
+    result = 0
+    if value == "2. Create a new password file":
+        result = heimdall.create_password_file(selected_folder)
+
+    if result == 1:
+        messagebox.showinfo("Success", "File created successfully!")
+    else:
+        messagebox.showerror("Error", "Process failed.")
+
+def run_backend_decrypt(value, file_path):
+    result = 0
+    if value == "3. Decrypt a file":
+        result = heimdall.decrypt(file_path)
+
+    if result == 1:
+        messagebox.showinfo("Success", "File decrypted successfully!")
+    else:
+        messagebox.showerror("Error", "Process failed.")
+
+def run_backend_add(value, file_path, website, email, username, password):
+    result = 0
+    if value == "4. Add to a password file":
+        result = heimdall.add_password_data(file_path, website, email, username, password) 
+
+    if result == 1:
+        messagebox.showinfo("Success", "Entry added successfully!")
+    else:
+        messagebox.showerror("Error", "Process failed.")
 
 def reset_ui():
     for widget in window.winfo_children():

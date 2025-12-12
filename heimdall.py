@@ -11,6 +11,7 @@ def keygen():
     return mykey, key
 
 def encrypt(mykey, key, file_path):
+    result = 0
     f = Fernet(key)
     #ENCRYPT FILE
     try:
@@ -19,8 +20,10 @@ def encrypt(mykey, key, file_path):
             original = original_file.read()
     except FileNotFoundError:
         print("The file was not found. Please check the path and try again.")
+        return result
     except Exception as e:
         print(f"An error occurred: {e}")
+        return result
 
     encrypted = f.encrypt(original)
 
@@ -32,14 +35,20 @@ def encrypt(mykey, key, file_path):
     try:
         os.remove(file_path)
         print("File deleted successfully.")
+        result = 1
+        return result
     except FileNotFoundError:
         print("File not found.")
+        return result
     except PermissionError:
         print("Permission denied. Cannot delete the file.")
+        return result
     except Exception as e:
         print(f"An error occurred: {e}")
+        return result
 
 def decrypt(file_path):
+    result = 0
     #READ EXISTING KEY
     with open('mykey.key', 'rb') as mykey:
         key = mykey.read()
@@ -52,8 +61,10 @@ def decrypt(file_path):
             encrypted = encrypted_file.read()
     except FileNotFoundError:
             print("The file was not found. Please check the path and try again.")
+            return result
     except Exception as e:
             print(f"An error occurred: {e}")
+            return result
 
     decrypted = f.decrypt(encrypted)
 
@@ -66,26 +77,38 @@ def decrypt(file_path):
     try:
         os.remove(file_path)
         print("File deleted successfully.")
+        result = 1
+        return result
     except FileNotFoundError:
         print("File not found.")
+        return result
     except PermissionError:
         print("Permission denied. Cannot delete the file.")
+        return result
     except Exception as e:
         print(f"An error occurred: {e}")
+        return result
 
 def create_password_file(selected_folder):
+    result = 0
     full_path = os.path.join(selected_folder, "passwords.csv")
     header = ['website', 'email','username','password']
     with open(full_path, 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(header) #write one row / header, writerows for multiple
+    result = 1
+    return result
 
 def add_password_data(file_path, website, email, username, password):
+    result = 0
     new_row = [website, email, username, password]
 
     with open(file_path, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(new_row) #write one row / header, writerows for multiple
+
+    result = 1
+    return result
 
 def view_file_contents(file_path):
     with open(file_path, newline='') as f:
