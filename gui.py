@@ -125,6 +125,14 @@ def option_four(value):
         message.pack(pady=(20, 10))
         print("Selected file:", file_path)
 
+        if "enc" in file_path:
+            cancel_message = tk.Label(window, text="Cannot edit this file. File encrypted.", font=("Arial", 12), fg="red")
+            cancel_message.pack(pady=(10, 10))
+
+            back_button = tk.Button(window, text="Go Back", command=reset_ui)
+            back_button.pack(pady=10)
+            return
+
         tk.Label(window, text="Please enter the site's name (one word)", font=("Arial", 12)).pack(pady=(10, 5))
         website_entry = tk.Entry(window, width=30)
         website_entry.pack(pady=5)
