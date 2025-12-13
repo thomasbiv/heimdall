@@ -253,6 +253,7 @@ def option_five(value):
 
             if result == 1:
                 load_data(website_filter=filter_var.get())  # Refresh Treeview
+            display_backend_remove_result(result)
 
         delete_button = tk.Button(window, text="Delete Selected Row", command=delete_selected_row, fg="white", bg="red")
         delete_button.pack(pady=10)
@@ -272,7 +273,6 @@ def run_backend_encrypt(value, mykey, key, file_path):
         messagebox.showinfo("Success", "File encrypted successfully!")
     else:
         messagebox.showerror("Error", "Process failed.")
-
 
 def run_backend_create(value, selected_folder):
     result = 0
@@ -303,6 +303,13 @@ def run_backend_add(value, file_path, website, email, username, password):
         messagebox.showinfo("Success", "Entry added successfully!")
     else:
         messagebox.showerror("Error", "Process failed.")
+
+def display_backend_remove_result(result):
+    if result == 1:
+        messagebox.showinfo("Success", "Entry removed successfully!")
+    else:
+        messagebox.showerror("Error", "Process failed.")
+
 
 def reset_ui():
     for widget in window.winfo_children():
